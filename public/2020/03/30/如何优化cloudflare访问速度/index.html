@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>如何优化cloudflare访问速度 | 泽 | xltz的小博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="">
+    <meta name="description" content="本站就是用cloudflare实现访问的，具体可以看我上一篇文章。如果你使用ipv4来访问本站，会发现速度很快，ping值也在50ms左右（我这里）。这速度延时，不像是cloudflare减速器啊！（笑）下面我就来说说怎么实现加速。 首先，我们要在cloudflare官网注册一个账号：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何优化cloudflare访问速度">
+<meta property="og:url" content="https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/index.html">
+<meta property="og:site_name" content="泽">
+<meta property="og:description" content="本站就是用cloudflare实现访问的，具体可以看我上一篇文章。如果你使用ipv4来访问本站，会发现速度很快，ping值也在50ms左右（我这里）。这速度延时，不像是cloudflare减速器啊！（笑）下面我就来说说怎么实现加速。 首先，我们要在cloudflare官网注册一个账号：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shop.io.mi-img.com/app/shop/img?id=shop_91669121d5256049b710d3d3f7772eb1.png">
+<meta property="og:image" content="https://shop.io.mi-img.com/app/shop/img?id=shop_f2993d4a4716e5111e8824319d60f65e.png">
+<meta property="og:image" content="https://shop.io.mi-img.com/app/shop/img?id=shop_bc4f09b3c0053fce9efca207cad4d8c4.png">
+<meta property="og:image" content="https://shop.io.mi-img.com/app/shop/img?id=shop_49795ca12686cc81e3ae6365b1ba12bb.png">
+<meta property="article:published_time" content="2020-03-30T06:09:40.968Z">
+<meta property="article:modified_time" content="2020-03-31T09:34:00.838Z">
+<meta property="article:author" content="xltz">
+<meta property="article:tag" content="xltz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shop.io.mi-img.com/app/shop/img?id=shop_91669121d5256049b710d3d3f7772eb1.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="泽" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.0">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">xltz</h5>
+          <a href="mailto:qqnengneng@126.com" title="qqnengneng@126.com" class="mail">qqnengneng@126.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                友情链接
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/xltzsoft" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">如何优化cloudflare访问速度</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">如何优化cloudflare访问速度</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-03-30T06:09:40.968Z" itemprop="datePublished" class="page-time">
+  2020-03-30
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+<article id="post-如何优化cloudflare访问速度"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">如何优化cloudflare访问速度</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-03-30 14:09:40" datetime="2020-03-30T06:09:40.968Z"  itemprop="datePublished">2020-03-30</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p><a href="https://stzo.cn" target="_blank" rel="noopener">本站</a>就是用cloudflare实现访问的，具体可以看我上一篇文章。如果你使用ipv4来访问本站，会发现速度很快，ping值也在50ms左右（我这里）。这速度延时，不像是cloudflare减速器啊！（笑）下面我就来说说怎么实现加速。</p>
+<p>首先，我们要在cloudflare官网注册一个账号：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://shop.io.mi-img.com/app/shop/img?id=shop_91669121d5256049b710d3d3f7772eb1.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>然后，我们去<a href="https://cdn.bnxb.com" target="_blank" rel="noopener">笨牛网</a>，用刚刚注册的cloudflare账号注册笨牛账号，然后添加域名解析，选择cname解析，把它提供的cname地址填到你的域名服务商那里。像这样：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://shop.io.mi-img.com/app/shop/img?id=shop_f2993d4a4716e5111e8824319d60f65e.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>最后就是选节点了，我们ping一下<a href="https://www.cloudflare.com/zh-cn/ips/" target="_blank" rel="noopener">cloudflare的ip段</a>，找到延时最低，丢包最少的ip，填入域名服务商，增加解析，改一下线路，完美！</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://shop.io.mi-img.com/app/shop/img?id=shop_bc4f09b3c0053fce9efca207cad4d8c4.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>好心的我给大家推荐几个不错的ip段：</p>
+<p>162.159.208.4-162.159.208.103</p>
+<p>162.159.209.4-162.159.209.103</p>
+<p>162.159.210.4-162.159.210.103</p>
+<p>162.159.211.4-162.159.211.103</p>
+<p>上面是百度云合作ip段，对电信友好，可以试试。</p>
+<p>172.64.32.*</p>
+<p>141.101.115.*</p>
+<p>上面是cloudflare香港节点，对移动友好，本站就是用的移动ip段。</p>
+<p>设置完ip，你会发现网站还是访问不了。。。那是因为，我忘记了一件关键的事情：去笨牛网添加解析。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://shop.io.mi-img.com/app/shop/img?id=shop_49795ca12686cc81e3ae6365b1ba12bb.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>其中，类型和回源地址根据你的服务器自行修改。</p>
+<p>最后，还可以在笨牛网的自动优化中优化一下，让全站都被cdn缓存。</p>
+<p>接下来，享受飞一般的网站访问速度吧！</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-03-31T09:34:00.838Z" itemprop="dateUpdated">2020-03-31 17:34:00</time>
+</span><br>
+
+
+        
+    </div>
+    <footer>
+        <a href="https://blog.stzo.cn">
+            <img src="/img/avatar.jpg" alt="xltz">
+            xltz
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/&title=《如何优化cloudflare访问速度》 — 泽&pic=https://blog.stzo.cn/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/&title=《如何优化cloudflare访问速度》 — 泽&source=xltz的小博客" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《如何优化cloudflare访问速度》 — 泽&url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/&via=https://blog.stzo.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2020/03/30/%E5%85%8D%E8%B4%B9%E8%8E%B7%E5%8F%96cloudflare%20pro/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">免费获取cloudflare pro</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2020/03/30/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A0%B4%E8%A7%A3xtlsoft%E7%AD%BE%E5%88%B0%E7%B3%BB%E7%BB%9F%EF%BC%88%E5%A4%B1%E8%B4%A5%EF%BC%89%E7%9A%84%E7%BB%8F%E5%8E%86/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">记一次破解xtlsoft签到系统（失败）的经历</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'true' == 'true',
+            verify: 'true' == 'true',
+            appId: "PHaCoSS693WCPxtg5jE2viDc-gzGzoHsz",
+            appKey: "Bzu0r9SUFseOL46B0XPQyK4x",
+            avatar: "mm",
+            placeholder: "欢迎评论!",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>xltz &copy; 2019 - 2020</span>
+            <span>
+                
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/&title=《如何优化cloudflare访问速度》 — 泽&pic=https://blog.stzo.cn/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/&title=《如何优化cloudflare访问速度》 — 泽&source=xltz的小博客" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《如何优化cloudflare访问速度》 — 泽&url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/&via=https://blog.stzo.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://blog.stzo.cn/2020/03/30/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96cloudflare%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD5UlEQVR42u3aS3IiQQwFQN//0jMRs3UA70mCYZG9IkxTXZW9kPX5+YmvP/+u33/5fT2/59G3yVOSpz9f7ezCgQMHDhzBUZOl2zuTI80gEtZ8/zhw4MCB4x0cz4NrfsgkciWBsD1MstvkHwgcOHDgwPFJjuTBbeDchN7kfhw4cODA8f0cm/RvU4hM9owDBw4cOL6HY9PCacNw0pTaNKg+VCvFgQMHDhxdvBumc9/5+Y3zHThw4MCBIw6xmwbPfpAub4CdnQ4HDhw4cNwEinrgIGfaBL9ZS2mGtZq/wIEDBw4cD+5MDp8PMbQlv3322a4QVUxx4MCBA8eCY1OAmyV4eUtp0/qaDUzgwIEDB44NRzvKkISo/J62IJiUGtt/IHDgwIEDxxVH0jTal+dy0Dxd3CSZD3eIAwcOHDjWHG160zal2vGChG/WBhsmhzhw4MCBo+TYjDLkzZ62TZUnY5tRv2hyEAcOHDhwjDiSpWfpU75mu06OUrxIHDhw4MDxBo6rFk4bLPOXNOutRQVEHDhw4MBxxLEfO9g3qPY1zjyZrIuDOHDgwIGjbDttynBtWyhhvQquw0IkDhw4cOBYcLRNo+RgsxVmTaPZQMZDaBw4cODAcV9bGx4vT67aRGvWsmrX/9lcOHDgwIHjadspCUuzGYAkuM6KennwfrE+Dhw4cOA44kiGDzbNp/bzLGy3+39YHMSBAwcOHEccVwMHbXhrA21eLkzKizhw4MCB45aj3dY+QLaNrv04RZsW4sCBAweOK458c/kAwW0LatOgKk6BAwcOHDgWHHnqtR9lywuRs5exocGBAwcOHO/gmI0LtGEy2Wjy29now4t1cODAgQPHmmOWtuXJ2ybd2q88Ww0HDhw4cGxWa8cXkuDXpmeze2Z10BcpKA4cOHDgOOXIi3Q50Ax3NpTQjuvhwIEDB47Pc+TNm7b9sznGLcSLthMOHDhw4Fhw5AlVm8i1v2qHITajDzhw4MCB45YjT8Pyv7fhMOfevIBi5zhw4MCBY8ExK+TlIW02svaORC76FgcOHDhwHHEkA3N5UMxD4+xI+VHrcTocOHDgwLHmmC2Rh652QGE2GJG8nmJEDwcOHDhwLDhmwax9WFtqLEYQbptVOHDgwIHjvu+/OmSS8uXJWzJa0Q7tzUqQOHDgwIGj5ZgV3Ta/ascjZgG7LSDiwIEDB45bjnZcIE+HZrG9Dduz4iMOHDhw4Pi/HO2IQ9IuOjjAqE318FXhwIEDB46PcyQbbVFmQbptREX7wYEDBw4cRxxXw3Czxk9OvC9iHredcODAgQPHeqChLeElj2y/zZ81bD7hwIEDB44Jx1+kbNi77xRDgAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.0"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.0" async></script>
+
+
+
+
+
+
+<script async src="//cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

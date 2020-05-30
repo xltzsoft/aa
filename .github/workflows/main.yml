@@ -29,9 +29,9 @@ jobs:
         npm install hexo-generator-baidu-sitemap -g
         npm install hexo-generator-sitemap -g
         npm install
-        mkdir -p /root/.ssh/
-        echo "${{ secrets.DEPLOY_KEY }}" > /root/.ssh/id_rsa
-        chmod 600 /root/.ssh/id_rsa
+        sudo mkdir -p /root/.ssh/
+        sudo echo "${{ secrets.DEPLOY_KEY }}" > /root/.ssh/id_rsa
+        sudo chmod 600 /root/.ssh/id_rsa
         ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
         git config --global user.email "xltzblog@163.com"
         git config --global user.name "xltzsoft"

@@ -23,10 +23,10 @@ jobs:
       run: |
         npm install hexo-cli -g
         npm install hexo-renderer-less --save
-        npm install hexo-generator-feed --save
-       npm install hexo-generator-json-content --save
-       npm install hexo-helper-qrcode --save
-       npm install
+        npm install hexo-generator-feed -g
+        npm install hexo-generator-json-content --save
+        npm install hexo-helper-qrcode --save
+        npm install
 
     - name: 4. hexo generate public files...
 

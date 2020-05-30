@@ -1,0 +1,34 @@
+name: GitHub Actions Build and Deploy
+on:
+  push:
+    branches:
+
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 1. git checkout...
+
+      uses: actions/checkout@v1
+
+    - name: 2. setup nodejs...
+
+      uses: actions/setup-node@v1
+
+    - name: 3. install hexo...
+
+      run: |
+        npm install hexo-cli -g
+        npm install hexo-renderer-less --save
+        npm install hexo-generator-feed --save
+       npm install hexo-generator-json-content --save
+       npm install hexo-helper-qrcode --save
+       npm install
+
+    - name: 4. hexo generate public files...
+
+      run: |
+        hexo g -d

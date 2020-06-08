@@ -1,4 +1,4 @@
-### 搭建hexo环境并上传github
+### 搭建hexo环境并上传至github
 首先，你需要在本地搭建好一个hexo环境，配置好,然后上传到github，最好用git push（文件太多）
 看看我的：[https://github.com/xltzsoft/aa](https://github.com/xltzsoft/aa)
 ### 编写GitHub Action

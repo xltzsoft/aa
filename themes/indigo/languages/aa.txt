@@ -20,7 +20,6 @@ CCTV5 8M1080HEVC,http://ott.mobaibox.com/PLTV/3/224/3221228395/index.m3u8
 CCTV5 Max16M1080,http://ott.mobaibox.com/PLTV/3/224/3221227537/index.m3u8
 CCTV5 Max16M1080,http://ott.mobaibox.com/PLTV/3/224/3221227617/index.m3u8
 CCTV5 Max16M1080,http://ott.mobaibox.com/PLTV/3/224/3221228179/index.m3u8
-
 CCTV5+ 8M1080HEVC,http://ott.mobaibox.com/PLTV/3/224/3221228277/index.m3u8
 CCTV5+ Max16M1080,http://ott.mobaibox.com/PLTV/3/224/3221227502/index.m3u8
 CCTV5+ Max16M1080,http://ott.mobaibox.com/PLTV/3/224/3221228176/index.m3u8
